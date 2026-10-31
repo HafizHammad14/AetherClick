@@ -4,7 +4,7 @@
 
 **Publisher:** Hammad Designz  
 **Application:** AetherClick - Auto Clicker  
-**Contact:** hafeezhammad14@gmail.com
+**Contact:** designz.by.hammad@gmail.com
 
 ---
 
@@ -39,5 +39,5 @@ If we update this Privacy Policy in the future, the revised policy will be poste
 
 ### 8. Contact Information
 If you have any questions or feedback regarding this Privacy Policy, please contact us at:  
-**Email:** hafeezhammad14@gmail.com  
+**Email:** designz.by.hammad@gmail.com  
 **GitHub:** [https://github.com/HafizHammad14/AetherClick](https://github.com/HafizHammad14/AetherClick)
