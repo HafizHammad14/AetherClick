@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherClick — Chrome Extension</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-shell">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand-group">
+        <div class="brand-logo-frame">
+          <img src="logo.png" alt="AetherClick" class="brand-logo">
+        </div>
+        <div class="brand-meta">
+          <div class="brand-title-row">
+            <h1 class="brand-title">AetherClick</h1>
+            <span class="version-tag">MV3</span>
+          </div>
+          <span class="brand-subtitle">Precision In-Browser Auto Clicker</span>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">READY</span>
+      </div>
+    </header>
+
+    <!-- Real-time HUD Pill -->
+    <div class="hud-pill" id="hudPill">
+      <div class="hud-stat">
+        <span class="hud-label">LIVE SPEED</span>
+        <span class="hud-value" id="lblLiveCps">0.0 <small>CPS</small></span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-label">TOTAL CLICKS</span>
+        <span class="hud-value" id="lblTotalClicks">0</span>
+      </div>
+      <button type="button" class="btn-reset-hud" id="btnResetHud" title="Reset Counter">↺</button>
+    </div>
+
+    <!-- Main Scrollable Settings -->
+    <div class="controls-scroll">
+      <!-- Card: Interval -->
+      <section class="glass-card">
+        <div class="card-title-row">
+          <div class="card-label">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Click Interval</span>
+          </div>
+          <div class="pill-segmented" role="radiogroup">
+            <button type="button" class="seg-item active" id="btnModeFixed">Fixed</button>
+            <button type="button" class="seg-item" id="btnModeRandom">Random</button>
+          </div>
+        </div>
+
+        <!-- Fixed Interval Grid -->
+        <div class="interval-grid" id="fixedIntervalGroup">
+          <div class="input-cell">
+            <input type="number" id="inHours" min="0" max="23" value="0">
+            <span class="unit-tag">HRS</span>
+          </div>
+          <div class="input-cell">
+            <input type="number" id="inMins" min="0" max="59" value="0">
+            <span class="unit-tag">MIN</span>
+          </div>
+          <div class="input-cell">
+            <input type="number" id="inSecs" min="0" max="59" value="0">
+            <span class="unit-tag">SEC</span>
+          </div>
+          <div class="input-cell highlight-cell">
+            <input type="number" id="inMs" min="1" max="999" value="100">
+            <span class="unit-tag">MS</span>
+          </div>
+        </div>
+
+        <!-- Random Interval Group (hidden by default) -->
+        <div class="random-interval-row" id="randomIntervalGroup" style="display: none;">
+          <div class="input-cell">
+            <label class="cell-label">Min</label>
+            <div class="input-with-unit">
+              <input type="number" id="inRandomMin" min="1" max="10000" value="50">
+              <span class="unit-tag">MS</span>
+            </div>
+          </div>
+          <span class="random-sep">to</span>
+          <div class="input-cell">
+            <label class="cell-label">Max</label>
+            <div class="input-with-unit">
+              <input type="number" id="inRandomMax" min="1" max="10000" value="150">
+              <span class="unit-tag">MS</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card: Click Options -->
+      <section class="glass-card">
+        <div class="card-title-row">
+          <div class="card-label">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="3" x2="12" y2="9"/></svg>
+            <span>Click Options</span>
+          </div>
+        </div>
+        <div class="options-grid">
+          <div class="option-col">
+            <label class="sub-label">Mouse Button</label>
+            <select id="selMouseButton" class="glass-select">
+              <option value="left" selected>Left Click</option>
+              <option value="right">Right Click</option>
+              <option value="middle">Middle Click</option>
+            </select>
+          </div>
+          <div class="option-col">
+            <label class="sub-label">Click Type</label>
+            <select id="selClickType" class="glass-select">
+              <option value="single" selected>Single Click</option>
+              <option value="double">Double Click</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card: Repeat Limit -->
+      <section class="glass-card">
+        <div class="card-title-row">
+          <div class="card-label">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <span>Repeat Limit</span>
+          </div>
+          <div class="pill-segmented">
+            <button type="button" class="seg-item active" id="btnRepeatInfinite">Infinite</button>
+            <button type="button" class="seg-item" id="btnRepeatCount">Count</button>
+          </div>
+        </div>
+        <div class="repeat-count-row" id="repeatCountRow" style="display: none;">
+          <label class="sub-label">Stop after clicks:</label>
+          <input type="number" id="inRepeatCount" class="glass-input" min="1" max="1000000" value="100">
+        </div>
+      </section>
+
+      <!-- Card: Target Location -->
+      <section class="glass-card">
+        <div class="card-title-row">
+          <div class="card-label">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <span>Target Location</span>
+          </div>
+        </div>
+        <div class="target-modes">
+          <label class="radio-chip">
+            <input type="radio" name="targetMode" value="cursor" id="radTargetCursor" checked>
+            <span>Follow Live Cursor</span>
+          </label>
+          <label class="radio-chip">
+            <input type="radio" name="targetMode" value="coords" id="radTargetCoords">
+            <span>Fixed Coordinates</span>
+          </label>
+          <label class="radio-chip">
+            <input type="radio" name="targetMode" value="element" id="radTargetElement">
+            <span>Target Element</span>
+          </label>
+        </div>
+
+        <!-- Target details -->
+        <div class="target-details" id="targetCoordsGroup" style="display: none;">
+          <div class="coords-inputs">
+            <div class="input-cell">
+              <label class="cell-label">X</label>
+              <input type="number" id="inCoordX" value="500">
+            </div>
+            <div class="input-cell">
+              <label class="cell-label">Y</label>
+              <input type="number" id="inCoordY" value="500">
+            </div>
+            <button type="button" class="btn-pick" id="btnPickTarget">
+              🎯 Pick on Page
+            </button>
+          </div>
+          <div class="element-selector-row" id="targetElementGroup" style="display: none;">
+            <label class="sub-label">CSS Selector</label>
+            <input type="text" id="inSelector" class="glass-input" placeholder="#submit-btn, .button, etc.">
+          </div>
+        </div>
+      </section>
+
+      <!-- Card: Creator & Designer (Hammad Designz) -->
+      <section class="glass-card dev-card">
+        <div class="dev-header">
+          <div class="dev-avatar">HD</div>
+          <div class="dev-info">
+            <span class="dev-tag">CREATOR & DESIGNER</span>
+            <div class="dev-name">Developed by Hammad Designz</div>
+          </div>
+        </div>
+        <div class="social-row">
+          <button type="button" class="social-btn facebook-btn" id="btnFacebook" title="Visit Hammad Designz on Facebook">
+            <svg class="social-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <div class="social-text">
+              <span class="social-title">Facebook</span>
+              <span class="social-sub">@hammad.designz</span>
+            </div>
+            <svg class="social-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </button>
+
+          <button type="button" class="social-btn instagram-btn" id="btnInstagram" title="Follow Hammad Designz on Instagram">
+            <svg class="social-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <div class="social-text">
+              <span class="social-title">Instagram</span>
+              <span class="social-sub">@hammad.designz</span>
+            </div>
+            <svg class="social-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sticky Action Footer -->
+    <footer class="footer-dock">
+      <button type="button" class="btn-action btn-start" id="btnToggleClicker">
+        <div class="btn-action-content">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span class="btn-action-text" id="btnActionText">Start Auto Clicker</span>
+        </div>
+        <span class="hotkey-hint">Ctrl+Shift+X</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

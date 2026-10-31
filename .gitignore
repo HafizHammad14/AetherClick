@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+
+# Build outputs
+release/
+dist/
+build/
+*.spec
+*.exe
+*.zip
+
+# Temporary Profiles
+.app_profile/
+.chromeprofile/
+.profile/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.log

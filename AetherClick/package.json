@@ -1,0 +1,68 @@
+{
+  "name": "aetherclick",
+  "productName": "AetherClick",
+  "version": "1.0.0",
+  "description": "Apple Liquid Glass Precision Auto Clicker & Macro Engine",
+  "main": "electron-main.js",
+  "author": "AetherClick",
+  "scripts": {
+    "start": "electron .",
+    "build:engine": "python -m PyInstaller --clean --noconfirm --onedir --windowed --name aether-engine --add-data \"index.html;.\" --add-data \"app.css;.\" --add-data \"app.js;.\" --add-data \"logo.png;.\" --add-data \"app_icon.ico;.\" --add-data \"notify.ps1;.\" --add-data \"window_mgr.ps1;.\" backend.py",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.aetherclick.autoclicker",
+    "productName": "AetherClick",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "index.html",
+      "app.css",
+      "app.js",
+      "logo.png",
+      "app_icon.ico",
+      "notify.ps1",
+      "window_mgr.ps1"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/aether-engine",
+        "to": "engine",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "app_icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "AetherClick",
+      "uninstallDisplayName": "AetherClick Precision Auto Clicker",
+      "runAfterFinish": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  }
+}
