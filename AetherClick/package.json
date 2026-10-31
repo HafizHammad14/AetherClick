@@ -2,7 +2,7 @@
   "name": "aetherclick",
   "productName": "AetherClick",
   "version": "1.0.0",
-  "description": "Apple Liquid Glass Precision Auto Clicker & Macro Engine",
+  "description": "Apple Liquid Glass Precision Auto Clicker and Macro Engine",
   "main": "electron-main.js",
   "author": "AetherClick",
   "scripts": {
@@ -40,7 +40,7 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
+          "target": "appx",
           "arch": [
             "x64"
           ]
@@ -48,6 +48,14 @@
       ],
       "icon": "app_icon.ico",
       "requestedExecutionLevel": "asInvoker"
+    },
+    "appx": {
+      "applicationId": "AetherClickAutoClicker",
+      "identityName": "HammadDesignz.AetherClick-AutoClicker",
+      "publisher": "CN=30F4399F-610B-4471-A407-FF1972B7DF1C",
+      "publisherDisplayName": "Hammad Designz",
+      "displayName": "AetherClick - Auto Clicker",
+      "showNameOnTiles": true
     },
     "nsis": {
       "oneClick": false,
